@@ -23,8 +23,8 @@
    </columnConstraints>
    <rowConstraints>
       <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
+      <RowConstraints maxHeight="398.0" minHeight="398.0" prefHeight="398.0" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
       <RowConstraints />
       <RowConstraints />
       <RowConstraints />
@@ -36,63 +36,71 @@
       <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
    </rowConstraints>
    <children>
-      <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <AnchorPane prefHeight="476.0" prefWidth="595.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
-            <Label fx:id="delimiterLabel" layoutX="82.0" layoutY="62.0" text="---" />
-            <Label fx:id="delimiterStatusLabel" layoutX="27.0" layoutY="62.0" text="Delimiter:" textFill="RED" />
-            <Label fx:id="baselineStatusLabel" layoutX="275.0" layoutY="62.0" text="Baseline: " textFill="RED" />
-            <Label fx:id="baselineFileName" layoutX="325.0" layoutY="62.0" text="---" />
-            <Label fx:id="configFileStatusLabel" layoutX="27.0" layoutY="94.0" text="Config:" textFill="RED" />
-            <Label fx:id="configFileName" layoutX="68.0" layoutY="94.0" text="---" />
-            <Label fx:id="fileNameFormatStatusLabel" layoutX="27.0" layoutY="126.0" text="File name format:" textFill="RED" />
-            <Label fx:id="fileNameFormatName" layoutX="123.0" layoutY="126.0" text="---" />
-            <TextField fx:id="delimiterCharacter" disable="true" layoutX="81.0" layoutY="191.0" onAction="#delimiterCharacterChange" prefHeight="25.0" prefWidth="197.0" promptText="What is the delimiter character?" />
-            <TextField fx:id="fileNameFormatText" disable="true" layoutX="81.0" layoutY="383.0" onAction="#fileNameFormatChange" prefHeight="25.0" prefWidth="197.0" promptText="What is the file name format?" />
-            <ComboBox fx:id="delimiter" layoutX="81.0" layoutY="159.0" onAction="#delimiterChange" prefHeight="25.0" prefWidth="197.0" promptText="Delimited or Fixed Width?" visibleRowCount="2">
-               <effect>
-                  <Glow level="0.0" />
-               </effect></ComboBox>
-            <Label fx:id="step1Label" layoutX="28.0" layoutY="163.0" text="Step 1:">
+            <Label fx:id="delimiterLabel" layoutX="94.0" layoutY="85.0" text="---" />
+            <Label fx:id="delimiterStatusLabel" layoutX="39.0" layoutY="85.0" text="Delimiter:" textFill="RED" />
+            <Label fx:id="baselineStatusLabel" layoutX="287.0" layoutY="85.0" text="Baseline: " textFill="RED" />
+            <Label fx:id="baselineFileName" layoutX="337.0" layoutY="85.0" text="---" wrapText="true" />
+            <Label fx:id="configFileStatusLabel" layoutX="39.0" layoutY="117.0" text="Config:" textFill="RED" />
+            <Label fx:id="configFileName" layoutX="80.0" layoutY="117.0" text="---" />
+            <Label fx:id="fileNameFormatStatusLabel" layoutX="39.0" layoutY="149.0" text="File name format:" textFill="RED" />
+            <Label fx:id="fileNameFormatName" layoutX="135.0" layoutY="149.0" text="---" />
+            <Label fx:id="step3Label" disable="true" layoutX="40.0" layoutY="321.0" text="Step 3:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="step5Label" disable="true" layoutX="40.0" layoutY="392.0" text="Step 5:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="step6Label" disable="true" layoutX="40.0" layoutY="428.0" text="Step 6:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="39.0" layoutY="40.0" text="How-To:" />
+            <Label fx:id="step4Label" disable="true" layoutX="40.0" layoutY="357.0" text="Step 4:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="testCaseFileName" layoutX="342.0" layoutY="115.0" text="---" />
+            <Label fx:id="testCaseStatusLabel" layoutX="287.0" layoutY="115.0" text="Test Case:" textFill="RED" />
+            <Label fx:id="step1Label" layoutX="40.0" layoutY="250.0" text="Step 1:">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Label>
-            <Label fx:id="step2Label" disable="true" layoutX="27.0" layoutY="195.0" text="Step 2:">
+            <Label fx:id="step2Label" disable="true" layoutX="40.0" layoutY="286.0" text="Step 2:">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label fx:id="step3Label" disable="true" layoutX="28.0" layoutY="230.0" text="Step 3:">
+            <TextField fx:id="delimiterCharacter" disable="true" layoutX="94.0" layoutY="282.0" onAction="#delimiterCharacterChange" prefHeight="25.0" prefWidth="197.0" promptText="What is the delimiter character?" />
+            <TextField fx:id="fileNameFormatText" disable="true" layoutX="94.0" layoutY="424.0" onAction="#fileNameFormatChange" prefHeight="25.0" prefWidth="197.0" promptText="What is the file name format?" />
+            <ComboBox fx:id="delimiter" layoutX="94.0" layoutY="246.0" onAction="#delimiterChange" prefHeight="25.0" prefWidth="197.0" promptText="Delimited or Fixed Width?" visibleRowCount="2">
+               <effect>
+                  <Glow level="0.0" />
+               </effect></ComboBox>
+            <Button fx:id="baselineFileButton" disable="true" layoutX="94.0" layoutY="317.0" mnemonicParsing="false" onAction="#uploadBaselineFileAction" prefHeight="25.0" prefWidth="197.0" text="Upload baseline file" />
+            <Button fx:id="configFileButton" disable="true" layoutX="94.0" layoutY="388.0" mnemonicParsing="false" onAction="#uploadConfigFileAction" prefHeight="25.0" prefWidth="197.0" text="Upload config file" />
+            <Button fx:id="magicButton" layoutX="353.0" layoutY="299.0" mnemonicParsing="false" onAction="#clickMagicButton" prefHeight="94.0" prefWidth="126.0" text="Magic!" />
+            <Button fx:id="testCaseFileButton" disable="true" layoutX="94.0" layoutY="353.0" mnemonicParsing="false" onAction="#uploadTestCaseAction" prefHeight="25.0" prefWidth="197.0" text="Upload test case file" />
+            <Hyperlink layoutX="90.0" layoutY="37.0" prefHeight="23.0" prefWidth="416.0" text="http://collab.iceng.nuancedev.local:8090/display/PSQA/Test+File+Generator" />
+            <Label fx:id="step7Label" disable="true" layoutX="40.0" layoutY="463.0" text="Step 7:">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Button fx:id="baselineFileButton" disable="true" layoutX="82.0" layoutY="226.0" mnemonicParsing="false" onAction="#uploadBaselineFileAction" prefHeight="25.0" prefWidth="197.0" text="Upload baseline file" />
-            <Label fx:id="baselineFilePath" layoutX="83.0" layoutY="252.0" />
-            <Label fx:id="step5Label" disable="true" layoutX="28.0" layoutY="335.0" text="Step 5:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Label>
-            <Button fx:id="configFileButton" disable="true" layoutX="82.0" layoutY="331.0" mnemonicParsing="false" onAction="#uploadConfigFileAction" prefHeight="25.0" prefWidth="197.0" text="Upload config file" />
-            <Label fx:id="step6Label" disable="true" layoutX="28.0" layoutY="387.0" text="Step 6:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Label>
-            <Label fx:id="configFilePath" layoutX="83.0" layoutY="356.0" />
-            <Button fx:id="magicButton" layoutX="353.0" layoutY="191.0" mnemonicParsing="false" prefHeight="111.0" prefWidth="197.0" text="Magic!" />
-            <ProgressIndicator layoutX="399.0" layoutY="348.0" prefHeight="92.0" prefWidth="126.0" progress="0.0" />
-            <Hyperlink layoutX="78.0" layoutY="14.0" prefHeight="23.0" prefWidth="416.0" text="http://collab.iceng.nuancedev.local:8090/display/PSQA/Test+File+Generator" />
-            <Label layoutX="27.0" layoutY="17.0" text="How-To:" />
-            <Button fx:id="testCaseFileButton" disable="true" layoutX="82.0" layoutY="279.0" mnemonicParsing="false" onAction="#uploadTestCaseAction" prefHeight="25.0" prefWidth="197.0" text="Upload test case file" />
-            <Label fx:id="step4Label" disable="true" layoutX="28.0" layoutY="283.0" text="Step 4:">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Label>
-            <Label fx:id="testCaseFilePath" layoutX="83.0" layoutY="304.0" />
-            <Label fx:id="testCaseFileName" layoutX="330.0" layoutY="92.0" text="---" />
-            <Label fx:id="testCaseStatusLabel" layoutX="275.0" layoutY="92.0" text="Test Case:" textFill="RED" />
+            <ComboBox fx:id="outputType" disable="true" layoutX="94.0" layoutY="459.0" onAction="#outputTypeChange" prefHeight="25.0" prefWidth="197.0" promptText="Single or multiple files?" visibleRowCount="2">
+               <effect>
+                  <Glow level="0.0" />
+               </effect>
+            </ComboBox>
+            <Label fx:id="outputTypeName" layoutX="113.0" layoutY="178.0" text="---" />
+            <Label fx:id="outputTypeStatusLabel" layoutX="40.0" layoutY="178.0" text="Output Type:" textFill="RED" />
          </children>
       </AnchorPane>
    </children>

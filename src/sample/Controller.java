@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 
 public class Controller implements Initializable {
 
@@ -26,13 +25,13 @@ public class Controller implements Initializable {
     @FXML
     private ComboBox<String> delimiter;
     @FXML
+    private ComboBox<String> outputType;
+    @FXML
     private TextField delimiterCharacter;
     @FXML
     private Button baselineFileButton;
     @FXML
     private Button magicButton;
-    @FXML
-    private Label baselineFilePath;
     @FXML
     private Label baselineFileName;
     @FXML
@@ -40,8 +39,6 @@ public class Controller implements Initializable {
 
     @FXML
     private Button testCaseFileButton;
-    @FXML
-    private Label testCaseFilePath;
     @FXML
     private Label testCaseFileName;
     @FXML
@@ -52,8 +49,6 @@ public class Controller implements Initializable {
     private Label delimiterStatusLabel;
     @FXML
     private Button configFileButton;
-    @FXML
-    private Label configFilePath;
     @FXML
     private Label configFileStatusLabel;
     @FXML
@@ -67,15 +62,27 @@ public class Controller implements Initializable {
     @FXML
     private Label step6Label;
     @FXML
+    private Label step7Label;
+    @FXML
+    private Label outputTypeStatusLabel;
+    @FXML
+    private Label outputTypeName;
+    @FXML
     private Label fileNameFormatStatusLabel;
     @FXML
     private Label fileNameFormatName;
     @FXML
     private TextField fileNameFormatText;
     private int requirementCounter = 0;
+    private String currentDirectory;
+    private File file = null;
 
 
     ObservableList<String> delimiterList = FXCollections.observableArrayList("Delimited", "Fixed width");
+    ObservableList<String> outputTypeList = FXCollections.observableArrayList("Single", "Multiple");
+    private String baselineFilePath;
+    private String testCaseFilePath;
+    private String configFilePath;
 
     /**
      * Called to initialize a controller after its root element has been
@@ -88,6 +95,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         delimiter.setItems(delimiterList);
+        outputType.setItems(outputTypeList);
         delimiterCharacter.setDisable(true);
         step2Label.setDisable(true);
         step2Label.setText("---");
@@ -99,6 +107,7 @@ public class Controller implements Initializable {
         step5Label.setDisable(true);
         step5Label.setText("---");
         step6Label.setText("---");
+        step7Label.setText("---");
         fileNameFormatText.setDisable(true);
         magicButton.setDisable(true);
     }
@@ -112,6 +121,7 @@ public class Controller implements Initializable {
             step4Label.setText("Step 4:");
             step5Label.setText("---");
             step6Label.setText("Step 5:");
+            step7Label.setText("Step 6:");
             delimiterCharacter.setDisable(false);
             configFileButton.setDisable(true);
         } else {
@@ -125,7 +135,8 @@ public class Controller implements Initializable {
             step4Label.setText("Step 3:");
             step5Label.setText("Step 4:");
             step6Label.setText("Step 5:");
-            if(!testCaseFilePath.getText().equals("")) {
+            step7Label.setText("Step 6:");
+            if(!testCaseFileName.getText().equals("---")) {
                 step5Label.setDisable(false);
                 configFileButton.setDisable(false);
             }
@@ -155,16 +166,17 @@ public class Controller implements Initializable {
         try {
             fileChooserBaseline = new FileChooser();
             fileChooserBaseline.setTitle("Select your baseline file");
-            fileChooserBaseline.setInitialDirectory(new File(System.getProperty("user.home")));
+            //fileChooserBaseline.setInitialDirectory(new File(System.getProperty("user.home")));
+            setCurrentDirectory(file, fileChooserBaseline);
             File baselineFile = fileChooserBaseline.showOpenDialog(baselineFileButton.getScene().getWindow());
-            String filePath = baselineFile.getAbsolutePath();
+            file = baselineFile;
+            baselineFilePath = baselineFile.getAbsolutePath();
             String fileName = baselineFile.getName();
-            baselineFilePath.setText(filePath);
             baselineFileName.setText(fileName);
             baselineStatusLabel.setTextFill(Color.GREEN);
             step4Label.setDisable(false);
             testCaseFileButton.setDisable(false);
-            //fileNameFormatText.setDisable(false);
+            fileNameFormatText.setDisable(false);
         } catch(NullPointerException ex) {
             System.out.println("Please select a baseline file to upload");
         }
@@ -177,11 +189,12 @@ public class Controller implements Initializable {
         try {
             fileChooserTestCase = new FileChooser();
             fileChooserTestCase.setTitle("Select your test case file");
-            fileChooserTestCase.setInitialDirectory(new File(System.getProperty("user.home")));
+            //fileChooserTestCase.setInitialDirectory(new File(System.getProperty("user.home")));
+            setCurrentDirectory(file, fileChooserTestCase);
             File testCaseFile = fileChooserTestCase.showOpenDialog(testCaseFileButton.getScene().getWindow());
-            String filePath = testCaseFile.getAbsolutePath();
+            file = testCaseFile;
+            testCaseFilePath = testCaseFile.getAbsolutePath();
             String fileName = testCaseFile.getName();
-            testCaseFilePath.setText(filePath);
             testCaseFileName.setText(fileName);
             testCaseStatusLabel.setTextFill(Color.GREEN);
             step5Label.setDisable(false);
@@ -203,12 +216,12 @@ public class Controller implements Initializable {
         try {
             FileChooser fileChooserConfig = new FileChooser();
             fileChooserConfig.setTitle("Select your config file");
-            fileChooserConfig.setInitialDirectory(new File(System.getProperty("user.home")));
-
+            //fileChooserConfig.setInitialDirectory(new File(System.getProperty("user.home")));
+            setCurrentDirectory(file, fileChooserConfig);
             File configFile = fileChooserConfig.showOpenDialog(configFileButton.getScene().getWindow());
-            String filePath = configFile.getAbsolutePath();
+            file = configFile;
+            configFilePath = configFile.getAbsolutePath();
             String fileName = configFile.getName();
-            configFilePath.setText(filePath);
             configFileName.setText(fileName);
             step6Label.setDisable(false);
             fileNameFormatText.setDisable(false);
@@ -223,11 +236,19 @@ public class Controller implements Initializable {
         String fileNameText = fileNameFormatText.getText();
         fileNameFormatName.setText(fileNameText);
 
-        if(fileNameText.trim().equals("")) {
+        if(fileNameText.trim().equals("---") || fileNameText.trim().equals("")) {
             fileNameFormatStatusLabel.setTextFill(Color.RED);
         } else {
             fileNameFormatStatusLabel.setTextFill(Color.GREEN);
         }
+        step7Label.setDisable(false);
+        outputType.setDisable(false);
+        enableMagicButton();
+    }
+
+    public void outputTypeChange(ActionEvent event) {
+        outputTypeStatusLabel.setTextFill(Color.GREEN);
+        outputTypeName.setText(outputType.getValue());
         enableMagicButton();
     }
 
@@ -240,7 +261,8 @@ public class Controller implements Initializable {
                     && baselineStatusLabel.getTextFill() == Color.GREEN
                     && testCaseStatusLabel.getTextFill() == Color.GREEN
                     && configFileStatusLabel.getTextFill() == Color.GREEN
-                    && fileNameFormatStatusLabel.getTextFill() == Color.GREEN) {
+                    && fileNameFormatStatusLabel.getTextFill() == Color.GREEN
+                    && outputTypeStatusLabel.getTextFill() == Color.GREEN){
                 magicButton.setDisable(false);
             } else {
                 magicButton.setDisable(true);
@@ -249,7 +271,8 @@ public class Controller implements Initializable {
             if (delimiterStatusLabel.getTextFill() == Color.GREEN
                     && baselineStatusLabel.getTextFill() == Color.GREEN
                     && testCaseStatusLabel.getTextFill() == Color.GREEN
-                    && fileNameFormatStatusLabel.getTextFill() == Color.GREEN) {
+                    && fileNameFormatStatusLabel.getTextFill() == Color.GREEN
+                    && outputTypeStatusLabel.getTextFill() == Color.GREEN) {
                 magicButton.setDisable(false);
             } else {
 
@@ -261,31 +284,45 @@ public class Controller implements Initializable {
     public void clickMagicButton(ActionEvent event) {
 
         CreateTestFiles ctf = new CreateTestFiles();
-        Time time = new Time();
-        String[] parseDateFormat = fileNameFormatText.getText().split(Pattern.quote("[, ]"));
-        String dateFormat = parseDateFormat[0];
-        String todaysDate = time.getTodaysDate(dateFormat);
+        String fileNameString = fileNameFormatText.getText();
+        if(outputType.getValue().equals("Multiple")) {
+            if(fileNameString.contains(".")) {
+                int fileNameIndex = fileNameString.lastIndexOf(".");
+                fileNameString = fileNameString.substring(0, fileNameIndex) + "_[FieldName]" + fileNameString.substring(fileNameIndex, fileNameString.length());
+            } else {
 
-        if(fileNameFormatText.getText().contains(".")) {
-            String fileNameExtensionParser = fileNameFormatText.getText().substring(fileNameFormatText.getText().lastIndexOf(".") + 1);
+            }
         }
 
-        fileNameFormatText.
 
 
         try {
 
             if(delimiter.getValue().equals("Fixed width")) {
-                ctf.createOutputFixedWidth(testCaseFilePath.getText(), baselineFilePath.getText(), configFilePath.getText(), "PROD.CM.DIALER.AUTO.NUANCE." + todaysDate + "_[FieldName]", false, false);
+                ctf.createOutputFixedWidth(testCaseFilePath, baselineFilePath, configFilePath, fileNameString, false, false);
 
             } else if(delimiter.getValue().equals("Delimited")) {
-                ctf.createOutput("C:/Users/david_him/Documents/Projects/BofA/WO15157/testfiles/testCaseMisc.txt",
-                        "C:/Users/david_him/Documents/Projects/BofA/WO15157/testfiles/varolii.std.in.20161207.misc.dat",
-                        ",", "varolii.std.in." + todaysDate + ".misc.[FieldName].dat", true);
+                ctf.createOutput(testCaseFilePath,
+                        baselineFilePath,
+                        delimiterCharacter.getText(), fileNameFormatText.getText(), true);
             } else {
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public String getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public void setCurrentDirectory(File file, FileChooser fileChooser) {
+        if(file != null){
+            File existDirectory = file.getParentFile();
+            fileChooser.setInitialDirectory(existDirectory);
+        } else {
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        }
+    }
+
 }

@@ -122,7 +122,8 @@ public class CreateTestFiles {
         File testFile = null;
         BufferedReader br = new BufferedReader(new FileReader(testCaseFilePath));
         String content = null;
-        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("/")) + "/";
+        //String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("/")) + "/";
+        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("\\")) + "\\";
 
         while((content = br.readLine()) != null) {
             if(content.contains(",")) {
