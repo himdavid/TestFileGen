@@ -117,6 +117,80 @@ public class CreateTestFiles {
         return map;
     }
 
+    public File createOutputFixedWidthCopy(String testCaseFilePath, String testDataFilePath, String configFilePath, String fileNameFormat, boolean header, boolean footer) throws IOException {
+        ArrayList testCasesLists = new ArrayList();
+        File testFile = null;
+        BufferedReader br = new BufferedReader(new FileReader(testCaseFilePath));
+        String content = null;
+        //String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("/")) + "/";
+        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("\\")) + "\\";
+
+        while((content = br.readLine()) != null) {
+            if(content.contains(",")) {
+                testCasesLists = new ArrayList(Arrays.asList(content.split(",")));
+            } else {
+                testCasesLists.add(content);
+            }
+
+            HashMap map = this.parseFieldsFixedWidth(testDataFilePath, configFilePath, header, footer);
+            HashMap updatedMap = this.updateFieldValueFixedWidth(map, testCasesLists);
+            String fileName = filePath + fileNameFormat.replace("[FieldName]", content.replace("\"", ""));
+            fileName = fileName.substring(0, Math.min(fileName.length(), 260));
+            testFile = new File(fileName);
+            File tempFileValue = new File(filePath + "tempValue.dat");
+            FileOutputStream fopsFinalFile = new FileOutputStream(testFile);
+            FileOutputStream fopsValue = new FileOutputStream(tempFileValue);
+            System.out.println(testFile.getAbsolutePath());
+            System.out.println("file length is: " + testFile.getAbsolutePath().length());
+            Iterator brValue = updatedMap.entrySet().iterator();
+
+            String fopsFooter;
+            while(brValue.hasNext()) {
+                Entry copyValue = (Entry)brValue.next();
+                String tempFileFooter = (String)copyValue.getKey();
+                fopsFooter = ((ConfigData)copyValue.getValue()).getValue();
+                fopsValue.write(fopsFooter.getBytes());
+                System.out.println("Field:" + tempFileFooter + " \n Value:" + fopsFooter);
+            }
+
+            if(header) {
+                File brValue1 = new File(filePath + "tempHeader.dat");
+                FileOutputStream copyValue1 = new FileOutputStream(brValue1);
+                copyValue1.write(this.getHeader(testDataFilePath).getBytes());
+                BufferedReader tempFileFooter1 = new BufferedReader(new FileReader(brValue1));
+                fopsFooter = tempFileFooter1.readLine() + "\n";
+                fopsFinalFile.write(fopsFooter.getBytes());
+                copyValue1.close();
+                tempFileFooter1.close();
+                brValue1.delete();
+            }
+
+            fopsValue.close();
+            BufferedReader brValue2 = new BufferedReader(new FileReader(tempFileValue));
+            String copyValue2 = brValue2.readLine();
+            fopsFinalFile.write(copyValue2.getBytes());
+            brValue2.close();
+            tempFileValue.delete();
+            if(footer) {
+                File tempFileFooter2 = new File(filePath + "tempFooter.dat");
+                FileOutputStream fopsFooter1 = new FileOutputStream(tempFileFooter2);
+                fopsFooter1.write(this.getFooter(testDataFilePath, header).getBytes());
+                BufferedReader brFooter = new BufferedReader(new FileReader(tempFileFooter2));
+                String copyFooter = "\n" + brFooter.readLine();
+                fopsFinalFile.write(copyFooter.getBytes());
+                fopsFooter1.close();
+                brFooter.close();
+                tempFileFooter2.delete();
+            }
+
+            testCasesLists.clear();
+            fopsFinalFile.close();
+        }
+
+        br.close();
+        return testFile;
+    }
+
     public File createOutputFixedWidth(String testCaseFilePath, String testDataFilePath, String configFilePath, String fileNameFormat, boolean header, boolean footer) throws IOException {
         ArrayList testCasesLists = new ArrayList();
         File testFile = null;
@@ -191,12 +265,100 @@ public class CreateTestFiles {
         return testFile;
     }
 
-    public ArrayList<String> createOutput(String testCaseFilePath, String testDataFilePath, String delimiter, String fileNameFormat, boolean multipleFilesFlag) throws IOException {
+    public ArrayList<String> createOutput(String testCaseFilePath, String testDataFilePath, String delimiter, String fileNameFormat, String multipleFilesFlag) throws IOException {
+        ArrayList testCasesLists = null;
+        File testFile = null;
+        File tempFile = null;
+        ArrayList testFileList = new ArrayList();
+        BufferedReader br = new BufferedReader(new FileReader(testCaseFilePath));
+        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("\\")) + "\\";
+        FileOutputStream fops1 = null;
+        FileOutputStream fops2 = null;
+        Boolean createHeader = true;
+
+        String content;
+        while((content = br.readLine()) != null) {
+            if(content.contains(",")) {
+                testCasesLists = new ArrayList(Arrays.asList(content.split(",")));
+            } else {
+                testCasesLists.add(content);
+            }
+
+            HashMap map = this.parseFieldsDelimited(testDataFilePath, delimiter);
+            HashMap updatedMap = this.updateFieldValue(map, testCasesLists);
+            String fileName = filePath + fileNameFormat.replace("[FieldName]", content.replace("\"", ""));
+            fileName = fileName.substring(0, Math.min(fileName.length(), 260));
+
+            testFileList.add(fileName);
+
+
+            if(multipleFilesFlag.equals("Single") && testFile == null && tempFile == null) {
+                testFile = new File(fileName);
+                fops1 = new FileOutputStream(testFile);
+                tempFile = new File(filePath +"temp.dat");
+                fops2 = new FileOutputStream(tempFile);
+            } else if(multipleFilesFlag.equals("Multiple")) {
+                testFile = new File(filePath + fileNameFormat.replace("[FieldName]", "MultipleRecords"));
+                fops1 = new FileOutputStream(testFile);
+            }
+
+            //System.out.println(testFile.getAbsolutePath());
+            //System.out.println("file length is: " + testFile.getAbsolutePath().length());
+            int setSize = updatedMap.entrySet().size();
+            int count = 1;
+
+            for(Iterator br2 = updatedMap.entrySet().iterator(); br2.hasNext(); ++count) {
+                Entry copyString = (Entry)br2.next();
+                String field = (String)copyString.getKey();
+                String value = (String)copyString.getValue();
+
+                if(count < setSize) {
+                    if(createHeader == true) {
+                        fops1.write(field.getBytes());
+                        fops1.write(delimiter.getBytes());
+                    }
+                    fops2.write(value.getBytes());
+                    fops2.write(delimiter.getBytes());
+                }
+            }
+            fops2.write("\n".getBytes());
+            createHeader = false;
+
+            testCasesLists.clear();
+            if(multipleFilesFlag.equals("Multiple")) {
+                BufferedReader var25 = new BufferedReader(new FileReader(tempFile));
+                String var24 = "\n" + var25.readLine();
+                fops1.write(var24.getBytes());
+                var25.close();
+                fops1.close();
+                fops2.close();
+                tempFile.delete();
+
+            }
+        }
+        if(multipleFilesFlag.equals("Single")) {
+            fops2.close();
+            BufferedReader var25 = new BufferedReader(new FileReader(tempFile));
+            String line;
+                while((line = var25.readLine()) != null) {
+                String var24 = "\n" + line;
+                fops1.write(var24.getBytes());
+            }
+            var25.close();
+            fops1.close();
+            //tempFile.delete();
+        }
+
+        br.close();
+        return testFileList;
+    }
+
+    public ArrayList<String> createOutputCopy(String testCaseFilePath, String testDataFilePath, String delimiter, String fileNameFormat, String multipleFilesFlag) throws IOException {
         ArrayList testCasesLists = null;
         File testFile = null;
         ArrayList testFileList = new ArrayList();
         BufferedReader br = new BufferedReader(new FileReader(testCaseFilePath));
-        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("/")) + "/";
+        String filePath = testCaseFilePath.substring(0, testCaseFilePath.lastIndexOf("\\")) + "\\";
 
         String content;
         while((content = br.readLine()) != null) {
@@ -211,7 +373,7 @@ public class CreateTestFiles {
             String fileName = filePath + fileNameFormat.replace("[FieldName]", content.replace("\"", ""));
             fileName = fileName.substring(0, Math.min(fileName.length(), 260));
             testFileList.add(fileName);
-            if(multipleFilesFlag) {
+            if(multipleFilesFlag.equals("Single") && testFile == null) {
                 testFile = new File(fileName);
             } else {
                 testFile = new File(filePath + fileNameFormat.replace("[FieldName]", "MultipleRecords"));

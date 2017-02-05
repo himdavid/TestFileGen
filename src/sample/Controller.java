@@ -294,8 +294,6 @@ public class Controller implements Initializable {
             }
         }
 
-
-
         try {
 
             if(delimiter.getValue().equals("Fixed width")) {
@@ -304,7 +302,7 @@ public class Controller implements Initializable {
             } else if(delimiter.getValue().equals("Delimited")) {
                 ctf.createOutput(testCaseFilePath,
                         baselineFilePath,
-                        delimiterCharacter.getText(), fileNameFormatText.getText(), true);
+                        delimiterCharacter.getText(), fileNameString, outputType.getValue());
             } else {
             }
         } catch (IOException e) {
