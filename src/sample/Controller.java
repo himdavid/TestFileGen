@@ -4,24 +4,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.text.*;
 import javafx.stage.FileChooser;
+
+import java.awt.*;
+import java.awt.Font;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    @FXML
-    private Label delimiterLabel;
-    @FXML
-    private Label step2Label;
     @FXML
     private ComboBox<String> delimiter;
     @FXML
@@ -29,26 +33,29 @@ public class Controller implements Initializable {
     @FXML
     private TextField delimiterCharacter;
     @FXML
+    private TextField fileNameFormatText;
+    @FXML
     private Button baselineFileButton;
     @FXML
     private Button magicButton;
     @FXML
+    private Button configFileButton;
+    @FXML
+    private Button testCaseFileButton;
+    @FXML
+    private Label delimiterLabel;
+    @FXML
+    private Label step2Label;
+    @FXML
     private Label baselineFileName;
     @FXML
     private Label baselineStatusLabel;
-
-    @FXML
-    private Button testCaseFileButton;
     @FXML
     private Label testCaseFileName;
     @FXML
     private Label testCaseStatusLabel;
-
-
     @FXML
     private Label delimiterStatusLabel;
-    @FXML
-    private Button configFileButton;
     @FXML
     private Label configFileStatusLabel;
     @FXML
@@ -64,6 +71,8 @@ public class Controller implements Initializable {
     @FXML
     private Label step7Label;
     @FXML
+    private Label step8Label;
+    @FXML
     private Label outputTypeStatusLabel;
     @FXML
     private Label outputTypeName;
@@ -72,14 +81,20 @@ public class Controller implements Initializable {
     @FXML
     private Label fileNameFormatName;
     @FXML
-    private TextField fileNameFormatText;
-    private int requirementCounter = 0;
+    private CheckBox headerCheckBox;
+    @FXML
+    private CheckBox footerCheckBox;
+    @FXML
+    private Hyperlink howToHyperLink;
+    //private int requirementCounter = 0;
     private String currentDirectory;
     private File file = null;
+    //private boolean baselineHeader = false;
+    //private boolean baselineFooter = false;
 
+    private ObservableList<String> delimiterList = FXCollections.observableArrayList("Delimited", "Fixed width");
+    private ObservableList<String> outputTypeList = FXCollections.observableArrayList("Single", "Multiple");
 
-    ObservableList<String> delimiterList = FXCollections.observableArrayList("Delimited", "Fixed width");
-    ObservableList<String> outputTypeList = FXCollections.observableArrayList("Single", "Multiple");
     private String baselineFilePath;
     private String testCaseFilePath;
     private String configFilePath;
@@ -92,7 +107,7 @@ public class Controller implements Initializable {
      *                  <tt>null</tt> if the location is not known.
      * @param resources The resources used to localize the root object, or <tt>null</tt> if
      */
-    @Override
+    //@Override
     public void initialize(URL location, ResourceBundle resources) {
         delimiter.setItems(delimiterList);
         outputType.setItems(outputTypeList);
@@ -108,8 +123,20 @@ public class Controller implements Initializable {
         step5Label.setText("---");
         step6Label.setText("---");
         step7Label.setText("---");
+        step8Label.setText("---");
         fileNameFormatText.setDisable(true);
         magicButton.setDisable(true);
+    }
+
+    public void clickHyperLinkChange(ActionEvent event) {
+
+        try {
+            Desktop.getDesktop().browse(new URI(howToHyperLink.getText()));
+        } catch(URISyntaxException ex) {
+
+        } catch(IOException ex){
+
+        }
     }
 
     public void delimiterChange(ActionEvent event) {
@@ -119,9 +146,11 @@ public class Controller implements Initializable {
             step2Label.setText("Step 2:");
             step3Label.setText("Step 3:");
             step4Label.setText("Step 4:");
-            step5Label.setText("---");
-            step6Label.setText("Step 5:");
+            headerCheckBox.setSelected(true);
+            step5Label.setText("Step 5:");
+            step6Label.setText("---");
             step7Label.setText("Step 6:");
+            step8Label.setText("Step 7:");
             delimiterCharacter.setDisable(false);
             configFileButton.setDisable(true);
         } else {
@@ -134,10 +163,12 @@ public class Controller implements Initializable {
             step3Label.setText("Step 2:");
             step4Label.setText("Step 3:");
             step5Label.setText("Step 4:");
+            headerCheckBox.setSelected(false);
             step6Label.setText("Step 5:");
             step7Label.setText("Step 6:");
+            step8Label.setText("Step 7:");
             if(!testCaseFileName.getText().equals("---")) {
-                step5Label.setDisable(false);
+                step6Label.setDisable(false);
                 configFileButton.setDisable(false);
             }
         }
@@ -175,8 +206,11 @@ public class Controller implements Initializable {
             baselineFileName.setText(fileName);
             baselineStatusLabel.setTextFill(Color.GREEN);
             step4Label.setDisable(false);
+            step5Label.setDisable(false);
+            headerCheckBox.setDisable(false);
+            footerCheckBox.setDisable(false);
             testCaseFileButton.setDisable(false);
-            fileNameFormatText.setDisable(false);
+            //fileNameFormatText.setDisable(false);
         } catch(NullPointerException ex) {
             System.out.println("Please select a baseline file to upload");
         }
@@ -197,12 +231,12 @@ public class Controller implements Initializable {
             String fileName = testCaseFile.getName();
             testCaseFileName.setText(fileName);
             testCaseStatusLabel.setTextFill(Color.GREEN);
-            step5Label.setDisable(false);
+            //step5Label.setDisable(false);
             if(delimiter.getValue().equals("Fixed width")) {
-                step5Label.setDisable(false);
+                step6Label.setDisable(false);
                 configFileButton.setDisable(false);
             } else {
-                step6Label.setDisable(false);
+                step7Label.setDisable(false);
                 fileNameFormatText.setDisable(false);
             }
         } catch(NullPointerException ex) {
@@ -223,7 +257,7 @@ public class Controller implements Initializable {
             configFilePath = configFile.getAbsolutePath();
             String fileName = configFile.getName();
             configFileName.setText(fileName);
-            step6Label.setDisable(false);
+            step7Label.setDisable(false);
             fileNameFormatText.setDisable(false);
             configFileStatusLabel.setTextFill(Color.GREEN);
         } catch(NullPointerException ex) {
@@ -241,7 +275,7 @@ public class Controller implements Initializable {
         } else {
             fileNameFormatStatusLabel.setTextFill(Color.GREEN);
         }
-        step7Label.setDisable(false);
+        step8Label.setDisable(false);
         outputType.setDisable(false);
         enableMagicButton();
     }
@@ -293,19 +327,16 @@ public class Controller implements Initializable {
 
             }
         }
-
         try {
+            ctf.createOutput(delimiter.getValue(),testCaseFilePath,baselineFilePath,configFilePath,
+                        delimiterCharacter.getText(), fileNameString, outputType.getValue(), headerCheckBox.isSelected(),footerCheckBox.isSelected());
 
-            if(delimiter.getValue().equals("Fixed width")) {
-                ctf.createOutputFixedWidth(testCaseFilePath, baselineFilePath, configFilePath, fileNameString, false, false);
+            magicButton.setText("DONE");
+            magicButton.setTextFill(Color.GREEN);
 
-            } else if(delimiter.getValue().equals("Delimited")) {
-                ctf.createOutput(testCaseFilePath,
-                        baselineFilePath,
-                        delimiterCharacter.getText(), fileNameString, outputType.getValue());
-            } else {
-            }
         } catch (IOException e) {
+            magicButton.setText("!! ERROR !!");
+            magicButton.setTextFill(Color.RED);
             e.printStackTrace();
         }
     }
@@ -322,5 +353,4 @@ public class Controller implements Initializable {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         }
     }
-
 }
