@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.FileChooser;
@@ -27,74 +28,25 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     @FXML
-    private ComboBox<String> delimiter;
+    private ComboBox<String> delimiter,outputType,hostChoiceBox;
     @FXML
-    private ComboBox<String> outputType;
+    private CheckBox headerCheckBox,footerCheckBox;
     @FXML
-    private TextField delimiterCharacter;
+    private TextField delimiterCharacter,fileNameFormatText;
     @FXML
-    private TextField fileNameFormatText;
+    private Button baselineFileButton,magicButton,configFileButton,testCaseFileButton;
     @FXML
-    private Button baselineFileButton;
-    @FXML
-    private Button magicButton;
-    @FXML
-    private Button configFileButton;
-    @FXML
-    private Button testCaseFileButton;
-    @FXML
-    private Label delimiterLabel;
-    @FXML
-    private Label step2Label;
-    @FXML
-    private Label baselineFileName;
-    @FXML
-    private Label baselineStatusLabel;
-    @FXML
-    private Label testCaseFileName;
-    @FXML
-    private Label testCaseStatusLabel;
-    @FXML
-    private Label delimiterStatusLabel;
-    @FXML
-    private Label configFileStatusLabel;
-    @FXML
-    private Label configFileName;
-    @FXML
-    private Label step3Label;
-    @FXML
-    private Label step4Label;
-    @FXML
-    private Label step5Label;
-    @FXML
-    private Label step6Label;
-    @FXML
-    private Label step7Label;
-    @FXML
-    private Label step8Label;
-    @FXML
-    private Label outputTypeStatusLabel;
-    @FXML
-    private Label outputTypeName;
-    @FXML
-    private Label fileNameFormatStatusLabel;
-    @FXML
-    private Label fileNameFormatName;
-    @FXML
-    private CheckBox headerCheckBox;
-    @FXML
-    private CheckBox footerCheckBox;
+    private Label delimiterLabel,step2Label,baselineFileName,baselineStatusLabel,testCaseFileName,testCaseStatusLabel,
+            delimiterStatusLabel,configFileStatusLabel,configFileName,step3Label,step4Label,step5Label,step6Label,
+            step7Label,step8Label,outputTypeStatusLabel,outputTypeName,fileNameFormatStatusLabel,fileNameFormatName;
     @FXML
     private Hyperlink howToHyperLink;
-    //private int requirementCounter = 0;
+
     private String currentDirectory;
     private File file = null;
-    //private boolean baselineHeader = false;
-    //private boolean baselineFooter = false;
-
     private ObservableList<String> delimiterList = FXCollections.observableArrayList("Delimited", "Fixed width");
     private ObservableList<String> outputTypeList = FXCollections.observableArrayList("Single", "Multiple");
-
+    private ObservableList<String> hostList = FXCollections.observableArrayList("SST01", "SST02", "SST03");
     private String baselineFilePath;
     private String testCaseFilePath;
     private String configFilePath;
@@ -111,6 +63,7 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         delimiter.setItems(delimiterList);
         outputType.setItems(outputTypeList);
+        hostChoiceBox.setItems(hostList);
         delimiterCharacter.setDisable(true);
         step2Label.setDisable(true);
         step2Label.setText("---");
@@ -126,6 +79,8 @@ public class Controller implements Initializable {
         step8Label.setText("---");
         fileNameFormatText.setDisable(true);
         magicButton.setDisable(true);
+
+
     }
 
     public void clickHyperLinkChange(ActionEvent event) {

@@ -96,11 +96,14 @@ public class Functions {
         return inputIdString.replace("InputId:", "").trim();
     }
 
-    public String dropFilePeTester(String host, String testFilePath, String clientId, String solutionName, String version, String fileMonitorTask, String timeOut) throws InterruptedException {
+    public String dropFilePeTester(String host, String testFilePath, String clientId, String solutionName,
+                                   String version, String fileMonitorTask, String timeOut) throws InterruptedException {
         this.webDriver.get(this.PE_TESTER_LOGIN_PAGE);
         if(this.webDriver.getCurrentUrl().equals(this.PE_TESTER_LOGIN_PAGE)) {
-            this.findElementByCssSelector(this.PE_TESTER_USERNAME_LOCATOR).sendKeys(new CharSequence[]{this.PE_TESTER_USERNAME_VALUE});
-            this.findElementByCssSelector(this.PE_TESTER_PASSWORD_LOCATOR).sendKeys(new CharSequence[]{this.PE_TESTER_PASSWORD_VALUE});
+            this.findElementByCssSelector(this.PE_TESTER_USERNAME_LOCATOR)
+                    .sendKeys(this.PE_TESTER_USERNAME_VALUE);
+            this.findElementByCssSelector(this.PE_TESTER_PASSWORD_LOCATOR)
+                    .sendKeys(this.PE_TESTER_PASSWORD_VALUE);
             this.findElementByCssSelector(this.PE_TESTER_LOGIN_BUTTON_LOCATOR).click();
         }
 

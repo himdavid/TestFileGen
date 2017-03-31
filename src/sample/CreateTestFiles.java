@@ -236,7 +236,7 @@ public class CreateTestFiles {
                     ConfigData configData = (ConfigData) copyString.getValue();
                     value = configData.getValue();
                 }
-                if(count < setSize) {
+                if(count <= setSize) {
                     if(createHeader == true && delimiterType.equals("Delimited")) {
                         fops1.write(field.getBytes());
                         fops1.write(delimiter.getBytes());

@@ -7,16 +7,21 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-        Parent root = FXMLLoader.load(getClass().getResource("MyUI.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("MyUItabbed.fxml"));
         primaryStage.setTitle("Test File Generator");
         primaryStage.setScene(new Scene(root, Color.RED));
         primaryStage.show();
     }
+
+
 
 
     public static void main(String[] args) {
